@@ -1,0 +1,217 @@
+<html>
+<head>
+<title>Mapped Video</title>
+
+<style>
+	@import url("https://fonts.googleapis.com/icon?family=Material+Icons");
+	body{
+		margin: 0px;
+	}
+	#video{
+		width: 100%;
+		height: 100%;
+	}
+	#videoPlayer{
+		width: 100%;
+		height: 100%;
+		margin: 0px;
+		background-color: #000000;
+	}
+	#videoControlsContainer{
+		width: 100%;
+		height: 40px;
+		position: absolute;
+		z-index: 1;
+		margin-top: -42px;
+		background-color: #222222;
+		opacity: 0;
+		-webkit-transition: opacity 0.25s ease;
+		-moz-transition: opacity 0.25s ease;
+		-o-transition: opacity 0.25s ease;
+		transition: opacity 0.25s ease;
+	}
+	#videoControls{
+		height: 40px;
+		width: 100%;
+		position: absolute;
+		display: none;
+		z-index: 2;
+		margin-top: -42px;
+		opacity: 0;
+		-webkit-transition: opacity 0.25s ease;
+		-moz-transition: opacity 0.25s ease;
+		-o-transition: opacity 0.25s ease;
+		transition: opacity 0.25s ease;
+	}
+	.videoButtons{
+		display: inline-block;
+		background: none;
+		border: none;
+		display: inline;
+		outline: none;
+		color: #ffffff;
+		font-size: 24px;
+		margin: 8px 0px;
+	}
+	#videoVolumeContainer{
+		display: inline-block;
+	}
+	#videoVolumeSlider{
+		display: none;
+	}
+</style>
+</head>
+<body>
+	<div id="video">
+		<video id="videoPlayer">
+            <source src="https://www.w3schools.com/html/mov_bbb.mp4" type="video/mp4">
+        </video>
+        <div id="videoControlsContainer">
+        </div>
+        <div id="videoControls">
+            <button id="videoPlay" class="videoButtons"><i class="material-icons">&#xE037;</i></button>
+            <div id="videoVolumeContainer">
+                <button id="videoVolumeIcon" class="videoButtons"><i class="material-icons">&#xE050;</i></button>
+                <input type="range" id="videoVolumeSlider" value="50" min="0" max="100" orient="vertical" style="height:24px;width:100px;">
+            </div>
+            <button id="videoFullscreen" class="videoButtons" style="float:right;"><i class='material-icons'>&#xE5D0;</i></button>
+        </div>
+    </div>
+	<script>
+		//Get rid of global vars
+		var videoPlayer = document.getElementById("videoPlayer");
+		var video = document.getElementById("video");
+		var videoControlsContainer = document.getElementById("videoControlsContainer");
+		var videoControls = document.getElementById("videoControls");
+		var videoPlay = document.getElementById("videoPlay");
+		var videoVolumeSlider = document.getElementById("videoVolumeSlider");
+		var videoVolumeIcon = document.getElementById("videoVolumeIcon");
+		var videoFullscreen = document.getElementById("videoFullscreen");
+		var videoFull = false;
+		video.addEventListener("mousemove", showControls);
+		video.addEventListener("mouseout", hideControls);
+		videoControls.addEventListener("mouseover", mouseStatusFalse);
+		videoControls.addEventListener("mouseleave", mouseStatusTrue);
+		videoPlayer.addEventListener("play", videoPlayButton);
+		videoPlayer.addEventListener("pause", videoPauseButton);
+		videoPlay.addEventListener("click", videoPlayPause);
+		videoVolumeContainer.addEventListener("mouseover", videoVolumeContainerOver);
+		videoVolumeContainer.addEventListener("mouseout", videoVolumeContainerOut);
+		videoVolumeSlider.addEventListener("change", videoVolumeSliderFunc);
+		videoVolumeIcon.addEventListener("click", videoVolumeIconFunc);
+		videoPlayer.addEventListener("volumechange", videoVolumeUpdate);
+		videoFullscreen.addEventListener("click", videoFullscreenFunc);
+		document.addEventListener("fullscreenchange", videoFullscreenChange);
+		document.addEventListener("webkitfullscreenchange", videoFullscreenChange);
+		document.addEventListener("mozfullscreenchange", videoFullscreenChange);
+		document.addEventListener("MSFullscreenChange", videoFullscreenChange);
+		document.mouseStatus = true;
+		checkMouse();
+		videoVolumeSliderFunc();
+		videoVolumeCheckMouse();
+		function showControls(){
+			mouseStatus = true;
+			videoControlsContainer.style.opacity = '0.5';
+			videoControls.style.opacity = '1';
+			videoControls.style.display = 'block';
+			document.lastMouseMove = new Date() / 1000;
+		}
+		function hideControls(){
+			videoControlsContainer.style.opacity = '0';
+			videoControls.style.opacity = '0';
+			videoControls.style.display = 'none';
+		}
+		function mouseStatusFalse(){
+			document.mouseStatus = false;
+		}
+		function mouseStatusTrue(){
+			document.mouseStatus = true;
+		}
+		function checkMouse() {
+			if (new Date() / 1000 - document.lastMouseMove >= 3 && document.mouseStatus == true) {
+				hideControls();
+			}
+			setTimeout(checkMouse, 100);
+		}
+		function videoPlayPause(){
+			if (document.videoIsPlaying){
+				videoPlayer.pause();
+			} else {
+			videoPlayer.play();
+		}
+		}
+		function videoPlayButton(){
+			videoPlay.innerHTML = "<i class='material-icons'>&#xE034;</i>";
+			document.videoIsPlaying = true;
+		}
+		function videoPauseButton(){
+			if (videoPlayer.ended){
+				videoPlay.innerHTML = "<i class='material-icons'>&#xE042;</i>";
+			} else {
+				videoPlay.innerHTML = "<i class='material-icons'>&#xE037;</i>";
+			}
+			document.videoIsPlaying = false;
+		}
+		function videoVolumeContainerOver(){
+			videoVolumeSlider.style.display = "inline-block";
+		}
+		function videoVolumeContainerOut(){
+			videoVolumeSlider.style.display = "none";
+		}
+		function videoVolumeSliderFunc(){
+			videoPlayer.volume = videoVolumeSlider.value / 100;
+		}
+		function videoVolumeIconFunc(){
+			if (videoPlayer.muted){
+				videoPlayer.muted = false;
+			} else {
+				videoPlayer.muted = true;
+			}
+		}
+		function videoVolumeUpdate(){
+			videoVolumeSlider.value = videoPlayer.volume * 100;
+			if (videoPlayer.muted){
+				videoVolumeIcon.innerHTML = "<i class='material-icons'>&#xE04F;</i>";
+			} else if (videoPlayer.volume > 0){
+				videoVolumeIcon.innerHTML = "<i class='material-icons'>&#xE050;</i>";
+			} else if (videoPlayer.volume == 0){
+				videoVolumeIcon.innerHTML = "<i class='material-icons'>&#xE04E;</i>";
+			}
+		}
+		function videoMuteFunc(){
+			if (videoPlayer.muted){
+				videoPlayer.muted = false;
+			} else {
+				videoPlayer.muted = true;
+			}
+		}
+		function videoFullscreenFunc() {
+			if ((document.fullScreenElement && document.fullScreenElement !== null) || (!document.mozFullScreen && !document.webkitIsFullScreen)) {
+				if (video.requestFullScreen) {
+					video.requestFullScreen();
+				} else if (video.mozRequestFullScreen) {
+					videoTag.mozRequestFullScreen();
+				} else if (video.webkitRequestFullScreen) {
+					video.webkitRequestFullScreen(Element.ALLOW_KEYBOARD_INPUT);
+				}
+			} else {
+				if (document.cancelFullScreen) {
+					document.cancelFullScreen();
+				} else if (document.mozCancelFullScreen) {
+					document.mozCancelFullScreen();
+				} else if (document.webkitCancelFullScreen) {
+					document.webkitCancelFullScreen();
+				}
+			}
+		}
+		function videoFullscreenChange(){
+			if (videoFull == true){
+					videoFullscreen.innerHTML = "<i class='material-icons'>&#xE5D0;</i>";
+				videoFull = false;
+			} else {
+					videoFullscreen.innerHTML = "<i class='material-icons'>&#xE5D1;</i>";
+				videoFull = true;
+			}
+		}
+	</script>
+</body>
