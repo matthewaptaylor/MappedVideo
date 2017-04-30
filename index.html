@@ -1,225 +1,88 @@
-<html>
+<!DOCTYPE html>
+<html lang="en">
 <head>
-<title>Mapped Video</title>
-
-<style>
-	@import url("https://fonts.googleapis.com/icon?family=Material+Icons");
-	body{
-		margin: 0px;
-	}
-	#video{
-		width: 100%;
-		height: 100%;
-	}
-	#videoPlayer{
-		width: 100%;
-		height: 100%;
-		margin: 0px;
-		background-color: #000000;
-	}
-	#videoControlsContainer{
-		width: 100%;
-		height: 40px;
-		position: absolute;
-		z-index: 1;
-		margin-top: -44px;
-		background-color: #222222;
-		opacity: 0;
-		-webkit-transition: opacity 0.25s ease;
-		-moz-transition: opacity 0.25s ease;
-		-o-transition: opacity 0.25s ease;
-		transition: opacity 0.25s ease;
-	}
-	#videoControls{
-		height: 40px;
-		width: 100%;
-		position: absolute;
-		display: none;
-		z-index: 2;
-		margin-top: -44px;
-		opacity: 0;
-		-webkit-transition: opacity 0.25s ease;
-		-moz-transition: opacity 0.25s ease;
-		-o-transition: opacity 0.25s ease;
-		transition: opacity 0.25s ease;
-	}
-	.videoButtons{
-		display: inline-block;
-		background: none;
-		border: none;
-		display: inline;
-		outline: none;
-		color: #ffffff;
-		font-size: 24px;
-		margin: 8px 0px;
-	}
-	#videoVolumeContainer{
-		display: inline-block;
-	}
-	#videoVolumeSlider{
-		display: none;
-	}
-</style>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+	
+	<title>Mapped Video - Mapped Projects</title>
+	
+	<link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/bootstrap/4.0.0-alpha.6/css/bootstrap.min.css" integrity="sha384-rwoIResjU2yc3z8GV/NPeZWAv56rSmLldC3R/AZzGRnGxQQKnKkoFVhFQhNUwEyJ" crossorigin="anonymous">
+	<link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
 </head>
 <body>
-	<div id="video">
-		<video id="videoPlayer">
-            <source src="https://www.w3schools.com/html/mov_bbb.mp4" type="video/mp4">
-        </video>
-        <div id="videoControlsContainer">
-        </div>
-        <div id="videoControls">
-            <button id="videoPlay" class="videoButtons"><i class="material-icons">&#xE037;</i></button>
-            <div id="videoVolumeContainer">
-                <button id="videoVolumeIcon" class="videoButtons"><i class="material-icons">&#xE050;</i></button>
-                <input type="range" id="videoVolumeSlider" value="50" min="0" max="100" orient="vertical" style="height:24px;width:100px;">
-            </div>
-            <button id="videoFullscreen" class="videoButtons" style="float:right;"><i class='material-icons'>&#xE5D0;</i></button>
-        </div>
-    </div>
-	<script>
-		//Get rid of global vars
-		var videoPlayer = document.getElementById("videoPlayer");
-		var video = document.getElementById("video");
-		var videoControlsContainer = document.getElementById("videoControlsContainer");
-		var videoControls = document.getElementById("videoControls");
-		var videoPlay = document.getElementById("videoPlay");
-		var videoVolumeSlider = document.getElementById("videoVolumeSlider");
-		var videoVolumeIcon = document.getElementById("videoVolumeIcon");
-		var videoFullscreen = document.getElementById("videoFullscreen");
-		var videoFull = false;
-		video.addEventListener("mousemove", showControls);
-		video.addEventListener("mouseout", hideControls);
-		videoControls.addEventListener("mouseover", mouseStatusFalse);
-		videoControls.addEventListener("mouseleave", mouseStatusTrue);
-		videoPlayer.addEventListener("play", videoPlayButton);
-		videoPlayer.addEventListener("pause", videoPauseButton);
-		videoPlay.addEventListener("click", videoPlayPause);
-		videoVolumeContainer.addEventListener("mouseover", videoVolumeContainerOver);
-		videoVolumeContainer.addEventListener("mouseout", videoVolumeContainerOut);
-		videoVolumeSlider.addEventListener("change", videoVolumeSliderFunc);
-		videoVolumeIcon.addEventListener("click", videoVolumeIconFunc);
-		videoPlayer.addEventListener("volumechange", videoVolumeUpdate);
-		videoFullscreen.addEventListener("click", videoFullscreenFunc);
-		document.addEventListener("fullscreenchange", videoFullscreenChange);
-		document.addEventListener("webkitfullscreenchange", videoFullscreenChange);
-		document.addEventListener("mozfullscreenchange", videoFullscreenChange);
-		document.addEventListener("MSFullscreenChange", videoFullscreenChange);
-		document.mouseStatus = true;
-		checkMouse();
-		videoVolumeSliderFunc();
-		videoVolumeCheckMouse();
-
-		function showControls(){
-			mouseStatus = true;
-			videoControlsContainer.style.opacity = '0.5';
-			videoControls.style.opacity = '1';
-			videoControls.style.display = 'block';
-			document.lastMouseMove = new Date() / 1000;
-		}
-
-		function hideControls(){
-			videoControlsContainer.style.opacity = '0';
-			videoControls.style.opacity = '0';
-			videoControls.style.display = 'none';
-		}
-
-		function mouseStatusFalse(){
-			document.mouseStatus = false;
-		}
-
-		function mouseStatusTrue(){
-			document.mouseStatus = true;
-		}
-
-		function checkMouse() {
-			if (new Date() / 1000 - document.lastMouseMove >= 3 && document.mouseStatus == true) {
-				hideControls();
-			}
-			setTimeout(checkMouse, 100);
-		}
-
-		function videoPlayPause(){
-			if (document.videoIsPlaying){
-				videoPlayer.pause();
-			} else {
-			videoPlayer.play();
-		}
-		}
-		function videoPlayButton(){
-			videoPlay.innerHTML = "<i class='material-icons'>&#xE034;</i>";
-			document.videoIsPlaying = true;
-		}
-		function videoPauseButton(){
-			if (videoPlayer.ended){
-				videoPlay.innerHTML = "<i class='material-icons'>&#xE042;</i>";
-			} else {
-				videoPlay.innerHTML = "<i class='material-icons'>&#xE037;</i>";
-			}
-			document.videoIsPlaying = false;
-		}
-
-		function videoVolumeContainerOver(){
-			videoVolumeSlider.style.display = "inline-block";
-		}
-		function videoVolumeContainerOut(){
-			videoVolumeSlider.style.display = "none";
-		}
-		function videoVolumeSliderFunc(){
-			videoPlayer.volume = videoVolumeSlider.value / 100;
-		}
-		function videoVolumeIconFunc(){
-			if (videoPlayer.muted){
-				videoPlayer.muted = false;
-			} else {
-				videoPlayer.muted = true;
-			}
-		}
-		function videoVolumeUpdate(){
-			videoVolumeSlider.value = videoPlayer.volume * 100;
-			if (videoPlayer.muted){
-				videoVolumeIcon.innerHTML = "<i class='material-icons'>&#xE04F;</i>";
-			} else if (videoPlayer.volume > 0){
-				videoVolumeIcon.innerHTML = "<i class='material-icons'>&#xE050;</i>";
-			} else if (videoPlayer.volume == 0){
-				videoVolumeIcon.innerHTML = "<i class='material-icons'>&#xE04E;</i>";
-			}
-		}
-		function videoMuteFunc(){
-			if (videoPlayer.muted){
-				videoPlayer.muted = false;
-			} else {
-				videoPlayer.muted = true;
-			}
-		}
-
-		function videoFullscreenFunc() {
-			if ((document.fullScreenElement && document.fullScreenElement !== null) || (!document.mozFullScreen && !document.webkitIsFullScreen)) {
-				if (video.requestFullScreen) {
-					video.requestFullScreen();
-				} else if (video.mozRequestFullScreen) {
-					videoTag.mozRequestFullScreen();
-				} else if (video.webkitRequestFullScreen) {
-					video.webkitRequestFullScreen(Element.ALLOW_KEYBOARD_INPUT);
-				}
-			} else {
-				if (document.cancelFullScreen) {
-					document.cancelFullScreen();
-				} else if (document.mozCancelFullScreen) {
-					document.mozCancelFullScreen();
-				} else if (document.webkitCancelFullScreen) {
-					document.webkitCancelFullScreen();
-				}
-			}
-		}
-		function videoFullscreenChange(){
-			if (videoFull == true){
-					videoFullscreen.innerHTML = "<i class='material-icons'>&#xE5D0;</i>";
-				videoFull = false;
-			} else {
-					videoFullscreen.innerHTML = "<i class='material-icons'>&#xE5D1;</i>";
-				videoFull = true;
-			}
-		}
-	</script>
+	<div class="container-fluid">
+		<div class="row bg-inverse">
+			<div class="col">
+				<br />
+				<h1 class="display-4 text-center text-white">Mapped Projects</h1>
+				<h3 class="text-center"><small class="text-muted">By matthewaptaylor</small></h3>
+				<br class="hidden-sm-up" />
+			</div>
+		</div>
+		<div class="row bg-inverse">
+			<div class="col">
+				<div class="container">
+					<nav class="navbar navbar-toggleable navbar-inverse">
+						<button class="navbar-toggler navbar-toggler-right" type="button" data-toggle="collapse" data-target="#navbarText" aria-controls="navbarText" aria-expanded="false" aria-label="Toggle navigation">
+							<span class="navbar-toggler-icon"></span>
+						</button>
+						<a class="navbar-brand hidden-sm-up" href="#">Navigation</a>
+						<div class="collapse navbar-collapse" id="navbarText">
+							<ul class="navbar-nav mr-auto">
+								<li class="nav-item active">
+									<a class="nav-link" href="//matthewaptaylor.github.io/">Projects</a>
+								</li>
+								<li class="nav-item">
+									<a class="nav-link" href="//matthewaptaylor.github.io/about">About</a>
+								</li>
+								<li class="nav-item">
+									<a class="nav-link" href="//matthewaptaylor.github.io/contact">Contact</a>
+								</li>
+							</ul>
+							<span class="navbar-text">
+									<a class="github-button" href="//github.com/matthewaptaylor" data-style="mega" data-show-count="true" aria-label="Follow @matthewaptaylor on GitHub">Follow @matthewaptaylor</a>
+							</span>
+						</div>
+					</nav>
+				</div>
+			</div>
+		</div>
+	</div>
+	<div class="container">
+	 	<div class="row" style="margin-top: 20px;">
+			<div class="card" style="width: 100%;">
+				<div class="card-block">
+					<div class="card-block">
+						<h2 class="card-title">Mapped Video</h4>
+						<iframe src="video.html" style="width: 100%;height: 30vw;border: none;overflow: hidden;" allowfullscreen="true"></iframe>
+						<p class="card-text">A clean, open source HTML5 video player.</p>
+						<div class="text-center">
+							<a href="//github.com/matthewaptaylor/MappedVideo" class="btn btn-outline-primary btn-sm">GitHub Page</a>
+							<br /><br />
+							<a class="github-button" href="//github.com/matthewaptaylor/MappedVideo/subscription" data-icon="octicon-eye" data-style="mega" data-show-count="true" aria-label="Watch matthewaptaylor/MappedVideo on GitHub">Watch</a>
+							<a class="github-button" href="//github.com/matthewaptaylor/MappedVideo" data-icon="octicon-star" data-style="mega" data-show-count="true" aria-label="Star matthewaptaylor/MappedVideo on GitHub">Star</a>
+							<a class="github-button" href="//github.com/matthewaptaylor/MappedVideo/fork" data-icon="octicon-repo-forked" data-style="mega" data-show-count="true" aria-label="Fork matthewaptaylor/MappedVideo on GitHub">Fork</a>
+							<a class="github-button" href="//github.com/matthewaptaylor/MappedVideo/issues" data-icon="octicon-issue-opened" data-style="mega" data-show-count="true" aria-label="Issue matthewaptaylor/MappedVideo on GitHub">Issue</a>
+							<a class="github-button" href="//github.com/matthewaptaylor/MappedVideo/archive/master.zip" data-icon="octicon-cloud-download" data-style="mega" aria-label="Download matthewaptaylor/MappedVideo on GitHub">Download</a>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+	<div class="container-fluid bg-inverse text-white">
+		<div class="row" style="padding: 12px;margin-top: 20px;">
+			<div class="col">
+				<em>&copy; Matthew Taylor, 2017</em>
+			</div>
+			<div class="col text-left">
+				<a href="//v4-alpha.getbootstrap.com" class="pull-right"><div style="color:#ffffff;font-size:16px;display:inline-block;">Made with&nbsp;&nbsp;</div><div style="background-color:#563d7c;color:#ffffff;border-radius:5px;width:22px;font-size:16px;display:inline-block;text-align:center;">B</div><div style="color:#563d7c;font-size:16px;display:inline-block;">&nbsp;Bootstrap</div></a>
+			</div>
+		</div>
+	</div>
+	<script async defer src="//buttons.github.io/buttons.js"></script>
+	<script src="//code.jquery.com/jquery-3.1.1.slim.min.js" integrity="sha384-A7FZj7v+d/sdmMqp/nOQwliLvUsJfDHW+k9Omg/a/EheAdgtzNs3hpfag6Ed950n" crossorigin="anonymous"></script>
+	<script src="//cdnjs.cloudflare.com/ajax/libs/tether/1.4.0/js/tether.min.js" integrity="sha384-DztdAPBWPRXSA/3eYEEUWrWCy7G5KFbe8fFjk5JAIxUYHKkDx6Qin1DkWx51bBrb" crossorigin="anonymous"></script>
+	<script src="//maxcdn.bootstrapcdn.com/bootstrap/4.0.0-alpha.6/js/bootstrap.min.js" integrity="sha384-vBWWzlZJ8ea9aCX4pEW3rVHjgjt7zpkNpZk+02D9phzyeVkE+jo0ieGizqPLForn" crossorigin="anonymous"></script>
 </body>
+</html>
